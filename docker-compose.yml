@@ -1,0 +1,48 @@
+version: '3.0'
+
+services:
+  frontend:
+    container_name: dailyfocus-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:${frontend_port}"
+    depends_on:
+      - backend
+    networks:
+      - dailyfocus
+
+  backend:
+    container_name: dailyfocus-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "5000:${backend_port}"
+    depends_on:
+      - postgres
+    networks:
+      - dailyfocus
+
+  postgres:
+    image: mysql
+    container_name: dailyfocus-mysql
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:${db_port}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - dailyfocus
+
+volumes:
+  mysql_data:
+networks:
+  dailyfocus:

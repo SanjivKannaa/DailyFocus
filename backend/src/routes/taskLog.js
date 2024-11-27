@@ -4,8 +4,8 @@ const router = express.Router();
 const { helloWorld, startTask, endTask } = require('../controllers/taskLog');
 
 router.get('/', helloWorld);
-router.get('/startTask', startTask);
-router.get('/endTask', endTask);
+router.get('/start', startTask);
+router.get('/end', endTask);
 
 
 module.exports = router;

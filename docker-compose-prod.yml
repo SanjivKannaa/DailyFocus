@@ -16,7 +16,7 @@ services:
       - dailyfocus
     volumes:
       - ./frontend:/app
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npm start"
 
   backend:
     container_name: dailyfocus-backend
@@ -33,7 +33,7 @@ services:
       - dailyfocus
     volumes:
       - ./backend:/app
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npm start"
 
   db:
     image: mysql

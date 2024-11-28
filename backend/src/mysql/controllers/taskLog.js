@@ -1,58 +1,58 @@
-// db/controllers/timeLogController.js
-const TimeLog = require('../models/timeLog');
+// db/controllers/taskLogController.js
+const taskLog = require('../models/taskLog');
 
 // Create a new time log
-async function createTimeLog(data) {
+async function createtaskLog(data) {
   try {
-    const newTimeLog = await TimeLog.create(data);
-    return newTimeLog;
+    const newtaskLog = await taskLog.create(data);
+    return newtaskLog;
   } catch (error) {
     throw error;
   }
 }
 
 // Get all time logs for a user
-async function getTimeLogsByUser(username) {
+async function gettaskLogsByUser(username) {
   try {
-    const timeLogs = await TimeLog.findAll({ where: { username } });
-    return timeLogs;
+    const taskLogs = await taskLog.findAll({ where: { username } });
+    return taskLogs;
   } catch (error) {
     throw error;
   }
 }
 
 // Get all time logs for a specific date
-async function getTimeLogsByDate(date) {
+async function gettaskLogsByDate(date) {
   try {
-    const timeLogs = await TimeLog.findAll({
+    const taskLogs = await taskLog.findAll({
       where: {
         date: date  // You can adjust this based on the format or how you store the date
       }
     });
-    return timeLogs;
+    return taskLogs;
   } catch (error) {
     throw error;
   }
 }
 
 // Get all time logs that are still open (i.e., 'to' is NULL)
-async function getTimeLogsByOpen() {
+async function gettaskLogsByOpen() {
   try {
-    const timeLogs = await TimeLog.findAll({
+    const taskLogs = await taskLog.findAll({
       where: {
         to: null  // Filters for logs where 'to' is NULL
       }
     });
-    return timeLogs;
+    return taskLogs;
   } catch (error) {
     throw error;
   }
 }
 
 // Update a time log by UID
-async function updateTimeLog(uid, data) {
+async function updatetaskLog(uid, data) {
   try {
-    const result = await TimeLog.update(data, {
+    const result = await taskLog.update(data, {
       where: { uid }
     });
     return result;
@@ -62,9 +62,9 @@ async function updateTimeLog(uid, data) {
 }
 
 // Delete a time log by UID (optional, if you need to delete logs)
-async function deleteTimeLog(uid) {
+async function deletetaskLog(uid) {
   try {
-    const result = await TimeLog.destroy({
+    const result = await taskLog.destroy({
       where: { uid }
     });
     return result;
@@ -74,10 +74,10 @@ async function deleteTimeLog(uid) {
 }
 
 module.exports = {
-  createTimeLog,
-  getTimeLogsByUser,
-  getTimeLogsByDate,
-  getTimeLogsByOpen,
-  updateTimeLog,
-  deleteTimeLog
+  createtaskLog,
+  gettaskLogsByUser,
+  gettaskLogsByDate,
+  gettaskLogsByOpen,
+  updatetaskLog,
+  deletetaskLog
 };

@@ -1,17 +1,18 @@
 /*
-uid: int, primarykey
-username: varchar
-projectname: varchar
-date: datetime
-from: timeformat
+Schema: task_logs
+uid: int, primary key, notnull
+username: varchar, notnull
+projectname: varchar, notnull
+date: datetime, notnull
+from: timeformat, notnull
 to: timeformat
 */
 
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../db');
+const sequelize = require('../db'); // Adjust if your sequelize instance export differs
 
-// Define the model for time logs
-const TimeLog = sequelize.define('taskLog', {
+// Define the model for task logs
+const TaskLog = sequelize.define('TaskLog', {
   uid: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -36,9 +37,9 @@ const TimeLog = sequelize.define('taskLog', {
   },
   to: {
     type: DataTypes.TIME,
-    allowNull: true
+    allowNull: true // Can be null for open sessions
   }
 });
 
-// Optionally export the model from an `index.js` file
-module.exports = taskLog;
+// Export the model
+module.exports = TaskLog;

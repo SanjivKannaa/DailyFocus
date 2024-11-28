@@ -1,5 +1,6 @@
 // db.js
 const { Sequelize } = require('sequelize');
+const { TaskLog } = require('./models/taskLog');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -16,9 +17,11 @@ const sequelize = new Sequelize({
 (async () => {
   try {
     await sequelize.authenticate();
+    await sequelize.sync({ alter: true });
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+    process.exit(1);
   }
 })();
 

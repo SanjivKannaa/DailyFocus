@@ -14,7 +14,7 @@ const startTask = async (req, res) => {
   if (to && to<from){
     return res.status(400).json({message: "from is greater than to"})
   }
-  if (from>="24:00:000" || (to && to>="24:00:00")){
+  if ((from>="24:00:000" || from<"00:00:00") || (to && (to>="24:00:00" || to<"00:00:00"))){
     return res.status(400).json({message: "time should be lesser than 24:00:00"})
   }
   const old_open = await getOpenTaskLogsByDateAndUser(username, date);
@@ -54,7 +54,7 @@ const endTask = async (req, res) => {
   if (!username || !projectname || !date || !to) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
-  if (to>="24:00:00"){
+  if (to>="24:00:00" || to<"00:00:00"){
     return res.status(400).json({message: "time should be lesser than 24:00:00"})
   }
   // find the open project records

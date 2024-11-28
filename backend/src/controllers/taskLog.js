@@ -1,6 +1,6 @@
 // controllers/userController.js
 const taskLog = require('../mysql/models/taskLog');
-const { gettaskLogsByDateAndUser, updatetaskLog } = require('../mysql/controllers/taskLog');
+const { gettaskLogsByDateAndUser, getOpenTaskLogsByDateAndUser, closeTaskLogs } = require('../mysql/controllers/taskLog');
 
 const helloWorld = (req, res) => {
   res.json({ methods: "start, end" });
@@ -17,32 +17,22 @@ const startTask = async (req, res) => {
   if (from>="24:00:000" || (to && to>="24:00:00")){
     return res.status(400).json({message: "time should be lesser than 24:00:00"})
   }
+  const old_open = await getOpenTaskLogsByDateAndUser(username, date);
+  for (let i=0;i<old_open.length;i++){
+    console.log(old_open[i]);
+    if (old_open[i].dataValues.projectname == projectname){
+      return res.status(400).json({message: "Project already started"});
+    }
+  }
   // check if there is any overlap -> reject
   const old = await gettaskLogsByDateAndUser(username, date);
   for (let i = 0; i < old.length; i++) {
     if (projectname!=old[i].dataValues.projectname){
       continue;
     }
-    if (from>=old[i].dataValues.from && from<=old[i].dataValues.to){
+    if ((from>=old[i].dataValues.from && from<=old[i].dataValues.to) || (to && (to>=old[i].dataValues.from && to<=old[i].dataValues.to))){
       // overlapping, need to update
-      try{
-        updatetaskLog(old[i].dataValues.uid, {
-          to: to
-        });
-        return res.status(200).json({message: "overlap detected, updated"})
-      }catch (error){
-        return res.status(400).json({message: "overlap detected, error updating", error: error})
-      }
-    }
-    if (to && (to>=old[i].dataValues.from && to<=old[i].dataValues.to)){
-      try{
-        updatetaskLog(old[i].dataValues.uid, {
-          from:from,
-        });
-        return res.status(200).json({message: "overlap detected, updated"})
-      }catch (error){
-        return res.status(400).json({message: "overlap detected, error updating", error: error})
-      }
+      return res.status(400).json({message: "overlap detected, rejected"})
     }
   }
   try{
@@ -59,8 +49,31 @@ const startTask = async (req, res) => {
   }
 }
 
-const endTask = (req, res) => {
-  res.status(200).json({message: "end task method incomplete"});
+const endTask = async (req, res) => {
+  const { username, projectname, date, to } = req.body;
+  if (!username || !projectname || !date || !to) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+  if (to>="24:00:00"){
+    return res.status(400).json({message: "time should be lesser than 24:00:00"})
+  }
+  // find the open project records
+  const old_open = await getOpenTaskLogsByDateAndUser(username, date);
+  for (let i=0;i<old_open.length;i++){
+    if (old_open[i].dataValues.projectname == projectname){
+      // found
+      if (old_open[i].dataValues.from>to){
+        return res.status(400).json({message: "from>to"})
+      }
+      try{
+        closeTaskLogs(old_open[i].dataValues.uid, to);
+        return res.status(200).json({message: "task closed"});
+      } catch (error){
+        return res.status(400).json({message: "error closing task", error:error});
+      }
+    }
+  }
+  return res.status(400).json({message: "project not in progres"})
 }
 
 module.exports = { helloWorld, startTask, endTask };

@@ -54,6 +54,39 @@ async function gettaskLogsByDateAndUser(username, date) {
   }
 }
 
+// Get time logs for open tasks of a user and/or a specific date
+async function getOpenTaskLogsByDateAndUser(username, date) {
+  try {
+    let queryConditions = {};
+    if (username) {
+      queryConditions.username = username;
+    }
+    if (date) {
+      queryConditions.date = date;
+    }
+    queryConditions.to = null;
+    const taskLogs = await taskLog.findAll({
+      where: queryConditions,
+    });
+    return taskLogs;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Get uid and to, and close the task
+async function closeTaskLogs(uid, to){
+  try{
+    const result = await taskLog.update(
+      { to:to },
+      { where: { uid } }
+    );
+    return result;
+  }catch (error){
+    throw error;
+  }
+}
+
 
 // Get all time logs that are still open (i.e., 'to' is NULL)
 async function gettaskLogsByOpen() {
@@ -98,6 +131,8 @@ module.exports = {
   gettaskLogsByUser,
   gettaskLogsByDate,
   gettaskLogsByDateAndUser,
+  getOpenTaskLogsByDateAndUser,
+  closeTaskLogs,
   gettaskLogsByOpen,
   updatetaskLog,
   deletetaskLog

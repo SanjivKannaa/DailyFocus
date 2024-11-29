@@ -18,6 +18,9 @@ const startTask = async (req, res) => {
     return res.status(400).json({message: "time should be lesser than 24:00:00"})
   }
   const old_open = await getOpenTaskLogsByDateAndUser(username, date);
+  if (old_open.length>=1){
+    return res.status(400).json({message: "another project is already open"})
+  }
   for (let i=0;i<old_open.length;i++){
     console.log(old_open[i]);
     if (old_open[i].dataValues.projectname == projectname){
